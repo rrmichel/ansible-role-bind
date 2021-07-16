@@ -4,6 +4,68 @@ This file contains al notable changes to the bind Ansible role.
 
 This file adheres to the guidelines of [http://keepachangelog.com/](http://keepachangelog.com/). Versioning follows [Semantic Versioning](http://semver.org/).  "GH-X" refers to the X'th issue/pull request on the Github project.
 
+## 5.0.0 - 2020-10-07
+
+Quite a bit of breaking changes in this release, so update your playbooks!
+
+### Added
+
+- (GH-122) Support for DNS64 (credit: [Paulius Mazeika](https://github.com/pauliusm))
+- The test playbook now enables the statistics-channels. Enter <http://SERVER_IP:8053> in a webbrowser to view the server statistics.
+- Ubuntu 16.04 is now included in CI tests
+ 
+### Breaking changes
+
+- The terms `master` and `slave` were replaced by `primary` and `secondary`, respectively, in all playbooks, templates and documentation. This reflects changes in recent versions of BIND. Remark that the actual configuration files still use the "old" names, because most supported distros still have older versions of BIND in their software package repositories.
+- `bind_zone_domains` is renamed to `bind_zones`
+- `master_server_ip` is renamed to `primaries` and is now a list instead of a string. This makes it possible to specify multiple primary servers. (Inspired by GH-124 by @pavel-z1)
+- It is now possible to specify the type of each zone individually. If `bind_zones.hosts` is defined, it becomes a primary zone, if not a secondary. (Inspired by GH-125 by @pavel-z1)
+
+See the documentation in the [README](README.md) and the [test playbook](molecule/default/converge.yml) for updated examples.
+
+### Other changes
+
+
+- (GH-130) Primary and secondary server configuration is now unified (a single template instead of separate). CI tests are now executed on Github Actions. Acceptance tests are now performed using a playbook instead of BATS. (credit: [Gregory Shulov](https://github.com/GR360RY))
+- Code cleanup (linter warnings, deprecated comments, etc.)
+
+## 4.2.0 - 2020-05-23
+
+An update that's been long overdue. Several PRs with new features were merged!
+
+A special thanks to @blofeldthefish for his willingness to help out with maintaining this role and to @RobinsOphalvens for contributing the new testing harness based on Molecule. Thanks to them, further development of this role got out of the deadlock it's been in since the previous version.
+
+## Added
+
+- New supported platforms
+    - CentOS 8 (GH-107, credit: [Paulius Mazeika](https://github.com/pauliusm))
+    - Debian 10 (no changes were needed)
+    - FreeBSD (GH-100, credit: [psa](https://github.com/psa))
+    - Ubuntu 20.04 LTS (no changes were needed)
+- (GH-69) Allow TTLs for individual records (credit: [Stuart Knight](https://github.com/blofeldthefish))
+- (GH-79) Added support for the SSHFP record type (credit: [Romuald](https://github.com/rds13))
+- (GH-81) Added support for the DNAME record type (credit: [B. Verschueren](https://github.com/bverschueren))
+- (GH-82) Added support for the NAPTR record type (credit: [Aido](https://github.com/aido))
+- (GH-83) Added support for the [`$GENERATE` directive](http://www.zytrax.com/books/dns/ch8/generate.html) (credit: [Rayford Johnson](https://github.com/rayfordj))
+- (GH-85) New role variable `bind_other_logs` (credit: [Paulo E. Castro](https://github.com/pecastro))
+- (GH-87) New role variable `bind_dns_keys`, a list of binding keys (credit: [Jérôme Avond](https://github.com/jadjay))
+- (GH-88) New role variable `bind_statistics_channels` (credit: [Stuart Knight](https://github.com/blofeldthefish))
+- (GH-105, GH-113) New role variable `bind_query_log`, with more flexibility w.r.t. query logging (credit: [Romuald](https://github.com/rds13) and [Jascha Sticher](https://github.com/itbane))
+- New keys in `bind_zone_domains`: `create_forward_zones` and `create_reverse_zones`. When present and set to false, they will prevent the creation of the forward or reverse zones, respectively. This results in a reverse only or forward only name server for that zone.
+
+## Changed
+
+- Molecule is now used as testing harness (credit: [Robin Ophalvens](https://github.com/RobinOphalvens)). The previous system was written before any standardised testing tools were available. It became too cumbersome to maintain, which had serious impact on the further development of this role.
+- (GH-75) Refactored hash gathering to determine if zone files need to be regenerated (credit: [Stuart Knight](https://github.com/blofeldthefish))
+- (GH-89) Add missing `allow-recursion` parameter for bind slaves, allowing them to handle recursion correctly (credit: [Lennart Weller](https://github.com/lhw))
+- (GH-91) Ensure the directory for cached slave zones is created (credit: [Otto Sabart](https://github.com/seberm))
+- (GH-99) Use `bind_group` variable instead of hard-coded value (credit: [Boris Momčilović](https://github.com/kornrunner))
+- (GH-114,115) Fix error with scenario in conjunction with a dhcp shared secret key to provide dynamic dns updates. (credit: [Fabio Rocha](https://github.com/frock81))
+
+## Removed
+
+- (GH-106) Removed DNSSEC Lookaside Validation, this service has been shut down
+
 ## 4.1.0 - 2018-10-05
 
 ## Added

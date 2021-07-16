@@ -1,9 +1,10 @@
-# roles/bind/defaults/main.yml
 ---
+
+bind_python_version: "{{ bind_default_python_version }}"
 
 bind_log: "data/named.run"
 
-bind_zone_domains:
+bind_zones:
   - name: "example.com"
     hostmaster_email: "hostmaster"
     networks:
@@ -12,9 +13,9 @@ bind_zone_domains:
 # List of acls.
 bind_acls: []
 
-# Key binding for slaves
+# Key binding for secondary servers
 bind_dns_keys: []
-#  - name: master_key
+#  - name: primary_key
 #    algorithm: hmac-sha256
 #    secret: "azertyAZERTY123456"
 
@@ -23,13 +24,24 @@ bind_dns_keys: []
 bind_listen_ipv4:
   - "127.0.0.1"
 
+# The list of ports to listen on for IPv4 addresses
+bind_listen_ipv4_port:
+  - 53
+
 # List of IPv6 address of the network interface(s) to listen on.
 bind_listen_ipv6:
   - "::1"
 
+# The list of ports to listen on for IPv6 addresses
+bind_listen_ipv6_port:
+  - 53
+
 # List of hosts that are allowed to query this DNS server.
 bind_allow_query:
   - "localhost"
+
+# A key-value list mapping server-IPs to TSIG keys for signing requests
+bind_key_mapping: {}
 
 # Determines whether recursion should be allowed. Typically, an authoritative
 # name server should have recursion turned OFF.
@@ -66,7 +78,10 @@ bind_zone_time_to_retry: "1H"
 bind_zone_time_to_expire: "1W"
 bind_zone_minimum_ttl: "1D"
 
-# Custom location for master zone files
-bind_zone_dir: "{{ bind_dir }}"
-# File mode for master zone files (needs to be something like 0660 for dynamic updates)
+# File mode for primary zone files (needs to be something like 0660 for dynamic updates)
 bind_zone_file_mode: "0640"
+
+# DNS64 support
+bind_dns64: false
+bind_dns64_clients:
+  - "any"
